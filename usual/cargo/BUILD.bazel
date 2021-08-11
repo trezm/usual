@@ -1,0 +1,67 @@
+"""
+@generated
+cargo-raze generated Bazel file.
+
+DO NOT EDIT! Replaced on runs of cargo-raze
+"""
+
+package(default_visibility = ["//visibility:public"])
+
+licenses([
+    "notice",  # See individual crates for specific licenses
+])
+
+# Aliased targets
+alias(
+    name = "anyhow",
+    actual = "@raze__anyhow__1_0_41//:anyhow",
+    tags = [
+        "cargo-raze",
+        "manual",
+    ],
+)
+
+alias(
+    name = "chrono",
+    actual = "@raze__chrono__0_4_19//:chrono",
+    tags = [
+        "cargo-raze",
+        "manual",
+    ],
+)
+
+alias(
+    name = "dotenv",
+    actual = "@raze__dotenv__0_15_0//:dotenv",
+    tags = [
+        "cargo-raze",
+        "manual",
+    ],
+)
+
+alias(
+    name = "serde",
+    actual = "@raze__serde__1_0_126//:serde",
+    tags = [
+        "cargo-raze",
+        "manual",
+    ],
+)
+
+alias(
+    name = "tokio",
+    actual = "@raze__tokio__1_6_1//:tokio",
+    tags = [
+        "cargo-raze",
+        "manual",
+    ],
+)
+
+alias(
+    name = "tokio_postgres",
+    actual = "@raze__tokio_postgres__0_7_2//:tokio_postgres",
+    tags = [
+        "cargo-raze",
+        "manual",
+    ],
+)

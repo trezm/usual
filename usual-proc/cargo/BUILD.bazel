@@ -1,0 +1,49 @@
+"""
+@generated
+cargo-raze generated Bazel file.
+
+DO NOT EDIT! Replaced on runs of cargo-raze
+"""
+
+package(default_visibility = ["//visibility:public"])
+
+licenses([
+    "notice",  # See individual crates for specific licenses
+])
+
+# Aliased targets
+alias(
+    name = "proc_macro2",
+    actual = "@raze__proc_macro2__1_0_27//:proc_macro2",
+    tags = [
+        "cargo-raze",
+        "manual",
+    ],
+)
+
+alias(
+    name = "quote",
+    actual = "@raze__quote__1_0_9//:quote",
+    tags = [
+        "cargo-raze",
+        "manual",
+    ],
+)
+
+alias(
+    name = "regex",
+    actual = "@raze__regex__1_5_4//:regex",
+    tags = [
+        "cargo-raze",
+        "manual",
+    ],
+)
+
+alias(
+    name = "syn",
+    actual = "@raze__syn__0_15_44//:syn",
+    tags = [
+        "cargo-raze",
+        "manual",
+    ],
+)
