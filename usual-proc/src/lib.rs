@@ -227,3 +227,60 @@ pub fn partial(items: TokenStream) -> TokenStream {
 
     gen.into()
 }
+
+#[proc_macro_derive(UsualModel)]
+pub fn usual_model_macro_derive(items: TokenStream) -> TokenStream {
+    let ast: syn::DeriveInput = syn::parse(items).unwrap();
+
+    let name = Ident::from(ast.ident);
+    let fields = match ast.data {
+        syn::Data::Struct(data_struct) => match data_struct.fields {
+            syn::Fields::Named(named_fields) => named_fields
+                .named
+                .into_iter()
+                .map(|field| Ident::from(field.ident.unwrap()))
+                .collect::<Vec<Ident>>(),
+            _ => panic!("Can only derive named fields of struct"),
+        },
+        _ => panic!("Can only derive fields of struct"),
+    };
+
+    let gen = quote! {
+        impl Model for #name {
+            fn from_row_starting_index(_index: usize, row: &impl TryGetRow) -> Self {
+              #name {
+                #(
+                    #fields: row.try_get(format!("{}{}", Self::prefix(), stringify!(#fields)).as_str())
+                    .expect(&format!("You messed up while trying to get {} ({}{}) from {}", stringify!(#fields), Self::prefix(), stringify!(#fields), stringify!(#name)))
+                ),*
+            }
+        }
+
+            fn from_row_with_prefix(prefix: &str, row: &impl TryGetRow) -> Self {
+              #name {
+                  #(
+                      #fields: row.try_get(format!("{}{}", prefix, stringify!(#fields)).as_str())
+                          .expect(&format!("You messed up while trying to get {} ({}{}) from {}", stringify!(#fields), prefix, stringify!(#fields), stringify!(#name)))
+                  ),*
+              }
+            }
+
+            fn columns_list() -> Vec<&'static str> {
+                vec![#(
+                    stringify!(#fields)
+                ),*]
+            }
+
+            fn prefix() -> &'static str {
+              concat!(stringify!(#name), "__")
+            }
+        }
+    };
+
+    // proc_macro::Span::call_site()
+    //     .note("Thruster code output")
+    //     .note(gen.to_string())
+    //     .emit();
+
+    gen.into()
+}

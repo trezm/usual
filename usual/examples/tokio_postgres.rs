@@ -9,15 +9,16 @@ use tokio_postgres::NoTls;
 use tokio_postgres::Row;
 use usual::partial;
 
-use usual::{base::Model, base::TryGetRow, impl_model, query};
+use usual::{base::Model, base::TryGetRow, impl_model, query, UsualModel};
 
-impl_model!(Post {
+#[derive(UsualModel)]
+struct Post {
     pub id: i64,
     pub title: String,
     pub content: String,
     pub created_at: DateTime<Utc>,
-    pub updated_at: DateTime<Utc>
-});
+    pub updated_at: DateTime<Utc>,
+}
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {

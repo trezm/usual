@@ -28,7 +28,9 @@ pub trait IntoEnum<T> {
 #[macro_export]
 macro_rules! impl_model {
   ($struct:ident {
-      $( pub $field:ident:$type:ty ),*
+      $(
+          pub $field:ident:$type:ty
+        ),*
   }) => {
       #[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
       #[serde(rename_all = "camelCase")]
@@ -137,7 +139,7 @@ where
 mod tests {
     use anyhow::{anyhow, Error};
     use std::{any::Any, collections::HashMap};
-    use usual_proc::query;
+    use usual_proc::{query, UsualModel};
 
     use super::{Model, TryGetRow};
     use crate::impl_model;
@@ -163,14 +165,25 @@ mod tests {
         }
     }
 
-    impl_model!(TestModel {
+    #[derive(UsualModel)]
+    struct TestModel {
         pub some_string: String,
-        pub some_int: i32
-    });
+        pub some_int: i32,
+    }
 
-    impl_model!(TestModel2 {
-        pub key: String
-    });
+    #[derive(UsualModel)]
+    struct TestModel2 {
+        pub key: String,
+    }
+
+    // impl_model!(TestModel {
+    //     pub some_string: String,
+    //     pub some_int: i32
+    // });
+
+    // impl_model!(TestModel2 {
+    //     pub key: String
+    // });
 
     #[test]
     fn it_should_be_able_to_get_from_row() {
