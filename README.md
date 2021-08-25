@@ -8,7 +8,7 @@ Usual is a simple wrapper for querying, and deserializing SQL queries in a (rela
 Usual revolves around models. Models let you query the data you want, and only the data you want. Simply add a `derive` for `UsualModel`.
 
 ```rs
-use usual::{UsualMode}
+use usual::{base::Model, base::TryGetRow, query, UsualModel};
 
 derive(UsualModel)
 struct Post {

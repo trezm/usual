@@ -1,17 +1,13 @@
-use anyhow::Error as ErrorStruct;
 use chrono::offset::Utc;
 use chrono::DateTime;
 use dotenv::dotenv;
-use std::any::{Any, TypeId};
 use std::env;
 use std::error::Error;
 use tokio_postgres::NoTls;
-use tokio_postgres::Row;
-use usual::partial;
 
-use usual::{base::Model, base::TryGetRow, impl_model, query, UsualModel};
+use usual::{base::Model, base::TryGetRow, partial, query, UsualModel};
 
-#[derive(UsualModel)]
+#[derive(Debug, UsualModel)]
 struct Post {
     pub id: i64,
     pub title: String,
