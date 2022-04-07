@@ -11,13 +11,19 @@ use usual::partial;
 
 use usual::{base::Model, base::TryGetRow, impl_model, query, UsualModel};
 
-#[derive(UsualModel)]
+// Note that Default is required for unusual fields
+#[derive(Clone, Debug, Default)]
+struct NonUsualField;
+
+#[derive(Debug, UsualModel)]
 struct Post {
     pub id: i64,
     pub title: String,
     pub content: String,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
+    #[unusual]
+    pub do_not_include: NonUsualField,
 }
 
 struct RowWrapper(Row);

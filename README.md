@@ -86,3 +86,22 @@ query!("SELECT {TestModel as t}, {TestModel2 as t2} FROM test_model as t JOIN te
 ```
 
 This will let you do a single query and hydrate multiple types of objects from the resulting rows.
+
+### Including non-sql values
+
+Including values not stored in SQL can be achieved by using the `#[unusual]` attribute. In order to be unusual, a field must implement `Default`, as when the struct is created this is what will be called for that field.
+
+```rs
+use usual::{base::Model, base::TryGetRow, query, UsualModel};
+
+struct SomethingElse {}
+
+derive(UsualModel)
+struct Post {
+    id: i64,
+    title: String,
+    content: String,
+    #[unusual]
+    non_sql: Option<SomethingElse>
+}
+```

@@ -51,7 +51,7 @@ pub fn query(items: TokenStream) -> TokenStream {
             if field_names.len() > 0 {
                 let mut fields = vec![];
 
-                &field_names.into_iter().for_each(|f| {
+                let _ = &field_names.into_iter().for_each(|f| {
                     let model_ident = Ident::new(model_name, Span2::call_site());
                     let column_literal = Literal::string(f);
 
@@ -228,18 +228,32 @@ pub fn partial(items: TokenStream) -> TokenStream {
     gen.into()
 }
 
-#[proc_macro_derive(UsualModel)]
+#[proc_macro_derive(UsualModel, attributes(unusual))]
 pub fn usual_model_macro_derive(items: TokenStream) -> TokenStream {
     let ast: syn::DeriveInput = syn::parse(items).unwrap();
 
     let name = Ident::from(ast.ident);
-    let fields = match ast.data {
+    let (fields, skipped) = match ast.data {
         syn::Data::Struct(data_struct) => match data_struct.fields {
-            syn::Fields::Named(named_fields) => named_fields
-                .named
-                .into_iter()
-                .map(|field| Ident::from(field.ident.unwrap()))
-                .collect::<Vec<Ident>>(),
+            syn::Fields::Named(named_fields) => {
+                let (skipped, fields): (Vec<syn::Field>, Vec<syn::Field>) =
+                    named_fields.named.into_iter().partition(|field| {
+                        !field.attrs.iter().any(|attr| {
+                            attr.path.segments.first().unwrap().ident.to_string() == "unusual"
+                        })
+                    });
+
+                (
+                    skipped
+                        .into_iter()
+                        .map(|field| Ident::from(field.ident.unwrap()))
+                        .collect::<Vec<Ident>>(),
+                    fields
+                        .into_iter()
+                        .map(|field| Ident::from(field.ident.unwrap()))
+                        .collect::<Vec<Ident>>(),
+                )
+            }
             _ => panic!("Can only derive named fields of struct"),
         },
         _ => panic!("Can only derive fields of struct"),
@@ -252,6 +266,9 @@ pub fn usual_model_macro_derive(items: TokenStream) -> TokenStream {
                 #(
                     #fields: row.try_get(format!("{}{}", Self::prefix(), stringify!(#fields)).as_str())
                     .expect(&format!("You messed up while trying to get {} ({}{}) from {}", stringify!(#fields), Self::prefix(), stringify!(#fields), stringify!(#name)))
+                ),*,
+                #(
+                    #skipped: Default::default()
                 ),*
             }
         }
@@ -261,6 +278,9 @@ pub fn usual_model_macro_derive(items: TokenStream) -> TokenStream {
                   #(
                       #fields: row.try_get(format!("{}{}", prefix, stringify!(#fields)).as_str())
                           .expect(&format!("You messed up while trying to get {} ({}{}) from {}", stringify!(#fields), prefix, stringify!(#fields), stringify!(#name)))
+                  ),*,
+                  #(
+                      #skipped: Default::default()
                   ),*
               }
             }
